@@ -1,4 +1,4 @@
-//1000x1000 grid of alternating 1s and 0s with 1000 evolution count took 378492ms
+//1000x1000 grid of alternating 1s and 0s with 1000 evolution count took 378492ms, 379299(2nd run)
 
 using System;
 using System.Collections.Generic;
