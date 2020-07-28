@@ -1,0 +1,340 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp1
+{
+
+    class Grid
+    {
+        private List<int> GridContainer = new List<int>();
+        private int EvolutionCount = 0;
+        private int target = 2;
+        private int GreenGeneration = 0;
+        private int Xsize = 0;
+
+        public Grid(List<int> GridInput, int inptarget, int x_size_input, int EvolCountInp){
+            GridContainer = GridInput;
+            target = inptarget;
+            Xsize = x_size_input;
+            EvolutionCount = EvolCountInp;
+            CheckForGreen();//check initial grid if it is a green generation
+            EvolveGrid();
+        }
+
+        private void CheckForGreen() 
+        {
+            if (GridContainer[target] == 1)
+            {
+                
+                GreenGeneration++;
+            }
+        }
+
+        private void EvolveGrid()
+        {
+            
+            for (int e = 0; e < EvolutionCount; e++)
+            {
+
+
+                List<int> NextGrid = new List<int>();
+
+
+                for (int i = 0; i < GridContainer.Count; i++)
+                {
+
+                    int green_neighbours = FindNeighbours(i);
+
+                        if (GridContainer[i] == 0 && (green_neighbours == 3 || green_neighbours == 6))
+                        {
+                            NextGrid.Add(1);
+                        }
+                        if (GridContainer[i] == 0 && (green_neighbours != 3 && green_neighbours != 6))
+                        {
+                            NextGrid.Add(0);
+                        }
+                        if (GridContainer[i] == 1 && (green_neighbours != 2 && green_neighbours != 3 && green_neighbours != 6))
+                        {
+                             NextGrid.Add(0);
+                        }
+                        if (GridContainer[i] == 1 && (green_neighbours == 2 || green_neighbours == 3 || green_neighbours == 6))
+                        {
+                            NextGrid.Add(1);
+                        }
+                    
+                }
+
+
+                GridContainer = NextGrid;
+                CheckForGreen(); // check for a green target after each evolution
+
+            }
+            Console.WriteLine("Green Generations:");
+            Console.WriteLine(GreenGeneration);
+
+        }
+
+        private void log(int e)
+        {
+            Console.WriteLine("begin" + e);
+            for(int i = 1;i<=GridContainer.Count;i++)
+            {
+                Console.Write(GridContainer[i-1]);
+                if(i % Xsize == 0)
+                {
+                    Console.Write("\n\r");
+                }
+            }
+        }
+
+        private int FindNeighbours(int target)
+        {
+            int green_neighbours = 0;
+            string neighbour_case = "";
+
+            if (target < Xsize)
+                neighbour_case = "top";
+            else if (target + Xsize >= GridContainer.Count)
+                neighbour_case = "bottom";
+            else
+                neighbour_case = "center";
+
+            if (target % Xsize == Xsize - 1)
+                neighbour_case += "right";
+            else if (target % Xsize == 0 || target % Xsize == 3)
+                neighbour_case += "left";
+            else
+                neighbour_case += "center";
+
+            switch (neighbour_case)
+            {
+                case "topright":
+                    if (GridContainer[target - 1] == 1) //center-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize - 1] == 1) //bottom-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize] == 1) //bottom-center neighbour
+                        green_neighbours++;
+
+                    break;
+                case "topcenter":
+                    if (GridContainer[target - 1] == 1) //center-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + 1] == 1) //center-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize - 1] == 1) //bottom-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize] == 1) //bottom-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize + 1] == 1) //bottom-right neighbour
+                        green_neighbours++;
+
+                    break;
+
+                case "topleft":
+                    if (GridContainer[target + 1] == 1) //center-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize] == 1) //bottom-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize + 1] == 1) //bottom-right neighbour
+                        green_neighbours++;
+
+                    break;
+
+                case "bottomright":
+                    if (GridContainer[target - Xsize - 1] == 1) //top-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize] == 1) //top-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - 1] == 1) //center-left neighbour
+                        green_neighbours++;
+
+                    break;
+
+                case "bottomcenter":
+                    if (GridContainer[target - Xsize - 1] == 1) //top-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize] == 1) //top-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize + 1] == 1) //top-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - 1] == 1) //center-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + 1] == 1) //center-right neighbour
+                        green_neighbours++;
+
+                    break;
+
+                case "bottomleft":
+                    if (GridContainer[target - Xsize] == 1) //top-center neighbour
+                        green_neighbours++;
+
+
+                    if (GridContainer[target - Xsize + 1] == 1) //top-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + 1] == 1) //center-right neighbour
+                        green_neighbours++;
+
+                    break;
+                case "centerleft":
+                   if (GridContainer[target - Xsize] == 1) //top-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize + 1] == 1) //top-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize] == 1) //bottom-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize + 1] == 1) //bottom-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + 1] == 1) //center-right neighbour
+                        green_neighbours++;
+
+                    break;
+                case "centercenter":
+                    if (GridContainer[target - Xsize - 1] == 1) //top-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize] == 1) //top-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize + 1] == 1) //top-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - 1] == 1) //center-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + 1] == 1) //center-right neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize - 1] == 1) //bottom-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize] == 1) //bottom-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize + 1] == 1) //bottom-right neighbour
+                        green_neighbours++;
+
+                    break;
+
+                case "centerright":
+                    if (GridContainer[target - Xsize - 1] == 1) //top-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - Xsize] == 1) //top-center neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target - 1] == 1) //center-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize - 1] == 1) //bottom-left neighbour
+                        green_neighbours++;
+
+                    if (GridContainer[target + Xsize] == 1) //bottom-center neighbour
+                        green_neighbours++;
+
+                    break;
+            }
+
+            return green_neighbours;
+        }
+
+    }
+
+
+
+    class UserInput
+    {
+
+        private  List<int> TempGridCont = new List<int>();
+
+        public UserInput()
+        {
+            Console.WriteLine("Enter Grid Size X, Y:");
+
+            string InputGridSize = Console.ReadLine();
+            string[] GridSize = InputGridSize.Split(',');
+
+            int Xsize = Convert.ToInt32(GridSize[0]);
+            int Ysize = Convert.ToInt32(GridSize[1]);
+
+            GetGridInfo(Xsize, Ysize);
+
+            Console.WriteLine("Enter target cell X and Y followed by Generation count.");
+            Console.WriteLine("ex.: 2, 1, 10");
+            string LastArg = Console.ReadLine();
+            string[] LastArgList = LastArg.Split(',');
+            int Ytar = Int32.Parse(LastArgList[1]);
+            int Xtar = Int32.Parse(LastArgList[0]);
+            int target = Xtar + Ytar * Xsize;
+            int Generations = Int32.Parse(LastArgList[2]);
+            Grid myGrid = new Grid(TempGridCont, target, Xsize, Generations);
+        }
+
+
+        private  void GetGridInfo(int Xsize, int Ysize)
+        {
+            string GridLine;
+            for (int i = 0; i < Ysize; i++)
+            {
+                Console.WriteLine($"Enter the info for row:{i+1}");
+                GridLine = Console.ReadLine();
+                
+                if (GridLine.Length > Xsize || GridLine.Length < Xsize)
+                {
+                    Console.WriteLine("Last line contained too many or too few charecters, it will be ignored;");
+                    i--;
+                }
+                else
+                {
+                    for (int l = 0; l < GridLine.Length; l++)
+                    {
+                        int TempInt = (int)Char.GetNumericValue(GridLine[l]);
+                        TempGridCont.Add(TempInt);
+                    }
+                    
+                }
+               
+            }
+
+        }
+
+        private  void GenerateGrid(string GridLine)
+        {
+            List<int> TempList = new List<int>();
+         
+        }
+    }
+
+    
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            UserInput User1 = new UserInput();
+            Console.ReadKey();
+        }
+    }
+}
